@@ -3,10 +3,10 @@ services:
   web:
     build: .
     ports:
-      - "80:3000"
+      - "3000:3000"
     command: bundle exec puma
     volumes:
-      - ./src:/src/app_name
+      - .:/app
       - bundle-data:/bundle
     depends_on:
       - db
