@@ -12,12 +12,9 @@
 
 ActiveRecord::Schema.define(version: 20171229114721) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
   create_table "order_details", force: :cascade do |t|
-    t.bigint "order_id"
-    t.bigint "product_id"
+    t.integer "order_id"
+    t.integer "product_id"
     t.integer "order_num"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -39,6 +36,4 @@ ActiveRecord::Schema.define(version: 20171229114721) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "order_details", "orders"
-  add_foreign_key "order_details", "products"
 end
