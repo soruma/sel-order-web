@@ -38,6 +38,13 @@ class ProductsController < ApplicationController
     @product.destroy
   end
 
+  # GET /products/menu/ramen
+  def menu
+    @products = Product.where(['category = ?', Product.categories[params[:category]]])
+
+    render json: @products
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product
@@ -46,6 +53,6 @@ class ProductsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def product_params
-      params.require(:product).permit(:name, :price, :image_url)
+      params.require(:product).permit(:name, :price, :image_url, :category)
     end
 end

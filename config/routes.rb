@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get '/products/menu/:category', to: 'products#menu'
+
   resources :order_details
   resources :orders
   resources :products
