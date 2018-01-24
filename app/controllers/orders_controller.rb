@@ -3,14 +3,14 @@ class OrdersController < ApplicationController
 
   # GET /orders
   def index
-    @orders = Order.all
+    @orders = Order.all.includes(:order_details)
 
-    render json: @orders
+    render json: @orders.to_json(:include => :order_details)
   end
 
   # GET /orders/1
   def show
-    render json: @order
+    render json: @order.to_json(:include => :order_details)
   end
 
   # POST /orders
@@ -18,7 +18,8 @@ class OrdersController < ApplicationController
     @order = Order.new(order_params)
 
     if @order.save
-      render json: @order, status: :created, location: @order
+      render json: @order.to_json(:include => :order_details),
+        status: :created, location: @order
     else
       render json: @order.errors, status: :unprocessable_entity
     end
@@ -26,8 +27,8 @@ class OrdersController < ApplicationController
 
   # PATCH/PUT /orders/1
   def update
-    if @order.update(order_params)
-      render json: @order
+    if @order.update(update_order_params)
+      render json: @order.to_json(:include => :order_details)
     else
       render json: @order.errors, status: :unprocessable_entity
     end
@@ -46,6 +47,17 @@ class OrdersController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def order_params
-      params.require(:order).permit(:table_num)
+      params.require(:order).permit(:table_num,
+                                    order_details_attributes: [:product_id,
+                                                               :order_num
+                                                              ])
+    end
+    def update_order_params
+      params.require(:order).permit(:table_num,
+                                    order_details_attributes: [:product_id,
+                                                               :order_num,
+                                                               :_destroy,
+                                                               :id
+                                                              ])
     end
 end
