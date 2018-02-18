@@ -1,11 +1,30 @@
-FROM ruby:2.4.1
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
+FROM ruby:2.5
+
+RUN apt-get update -qq \
+	&& apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    nodejs \
+    wget
+
+RUN wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | \
+  apt-key add -
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update -qq \
+	&& apt-get install -y --no-install-recommends \
+  postgresql-client-9.6 \
+  && rm -rf /var/lib/apt/lists/*t
+
+RUN mkdir /mnt/rails
+COPY Gemfile /mnt/rails/
+COPY Gemfile.lock /mnt/rails/
+WORKDIR /mnt/rails
+
+# Bundle install
 ENV BUNDLE_JOBS=4 \
-    BUNDLE_PATH=/bundle \
-    APP_DIR=/app
-RUN mkdir -p $APP_DIR
-WORKDIR $APP_DIR
-COPY Gemfile $APP_DIR
-COPY Gemfile.lock $APP_DIR
-RUN gem install bundler & bundle install
-WORKDIR $APP_DIR
+    BUNDLE_PATH=/bundle
+RUN bundle install
+COPY . /mnt/rails
+
+EXPOSE 5000
+
